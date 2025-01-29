@@ -2,19 +2,27 @@ const express=require("express");
 
 const app=express();
 
+const {admin}=require("./middlewares/auth");
 
-app.get("/test",(req,res)=>{
-    console.log(req);
-    res.send({
-        name:"Manoj Kumar Teru",
-        age:20
-    })
+app.use("/login",admin);
+
+app.use("/login/getAlldata",(req,res)=>{
+    res.send("Got all data");
 })
 
-app.post("/test",(req,res)=>{
-    res.send("Data pushed into database successfully!");
+app.use("/login/pic",(req,res)=>{
+    res.send("Iam your picture");
 })
+
+
+
 
 app.listen(3000,()=>{
     console.log("Hi");
 })
+
+
+
+
+
+
