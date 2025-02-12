@@ -7,6 +7,54 @@ const User=require("./models/user");
 
 app.use(express.json()); //it is a middleware to convert the user data into json (readable)
 
+
+app.get("/users",async(req,res)=>{
+    const name=req.body.firstName;
+    try{
+        const users=await User.find({firstName: name});
+        res.send(users);
+    }
+    catch(err){
+        res.send("Something went wrong");
+    }
+
+})
+
+app.delete("/delete",async (req,res)=>{
+    console.log(req.body.userid);
+    try{
+        await User.findOneAndDelete({_id:req.body.userid});
+        res.send("User deleted Successfully!");
+    }
+    catch(err){
+        res.send("something went wrong");
+    }
+})
+
+app.patch(("/patch"),async(req,res)=>{
+    const userid=req.body.userid;
+    const data=req.body;
+    try{
+        const user=await User.findByIdAndUpdate({_id:userid},data,{returnDocument:"after"}); //id and data
+        res.send("user updated successsfully");
+        console.log(user);
+    }
+    catch(err){
+        res.send("Something went wrong");
+    }
+})
+
+app.get("/feed",async(req,res)=>{
+    try{
+        const users=await User.find({});
+        res.send(users);
+    }
+    catch(err){
+        res.send("Something went wrong");
+    }
+})
+
+
 app.post("/signup",async(req,res)=>{
 
     // console.log(req.body);
@@ -20,21 +68,7 @@ app.post("/signup",async(req,res)=>{
     catch(err){
         res.status(400).send("Error saving the user data"+err.message);
     }
-
-
-    // const user=new User({
-    //     firstName:"Rohit",
-    //     lastName:"Sharma",
-    //     emailid:"rohit@sharma.cpm",
-    //     password:"roht@123"
-    // })
-
-    // try{
-    //     await user.save();
-    //     res.send("User Added Successfully!");
-    // } catch(err){
-    //     res.status(400).send("Error Saving the user:"+err.message);
-    // }
+    
     
 })
 
