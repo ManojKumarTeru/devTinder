@@ -4,7 +4,6 @@ const connectDB=require("./config/database");
 const app=express();
 
 const User=require("./models/user");
-
 app.use(express.json()); //it is a middleware to convert the user data into json (readable)
 
 
@@ -31,11 +30,28 @@ app.delete("/delete",async (req,res)=>{
     }
 })
 
-app.patch(("/patch"),async(req,res)=>{
-    const userid=req.body.userid;
+app.patch(("/user/:userId"),async(req,res)=>{
+    const userid=req.params?.userId;
     const data=req.body;
     try{
-        const user=await User.findByIdAndUpdate({_id:userid},data,{returnDocument:"after"}); //id and data
+
+        const ALLOWED_UPDATES=[
+            "photoUrl","skills","age","gender"
+        ];
+
+        const isUpdateAllowed=Object.keys(data).every((k)=>{
+            ALLOWED_UPDATES.includes(k);
+        })
+        
+        if(!isUpdateAllowed){
+            throw new Error("Update not allowed!");
+        }
+
+        if(data?.skills.length>10){
+            throw new Error("Update not allowed!");
+        }
+
+        const user=await User.findByIdAndUpdate({_id:userid},data,{returnDocument:"after",runValidators:"true",}); //id and data
         res.send("user updated successsfully");
         console.log(user);
     }
